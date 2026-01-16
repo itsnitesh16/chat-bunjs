@@ -1,0 +1,58 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id        String   @id @default(uuid())
+  clerkId   String   @unique
+  name      String
+  email     String   @unique
+  avatar    String   @default("")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // relations
+  chats        Chat[]    @relation("ChatParticipants")
+  sentMessages Message[] @relation("UserMessages")
+}
+
+model Chat {
+  id            String    @id @default(uuid())
+  lastMessageId String?   @unique
+  lastMessageAt DateTime? @default(now())
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // relations
+  lastMessage  Message?  @relation("LastMessage", fields: [lastMessageId], references: [id])
+  participants User[]    @relation("ChatParticipants")
+  messages     Message[] @relation("ChatMessages")
+}
+
+model Message {
+  id        String   @id @default(uuid())
+  chatId    String
+  senderId  String
+  text      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // relations
+  chat              Chat  @relation("ChatMessages", fields: [chatId], references: [id], onDelete: Cascade)
+  sender            User  @relation("UserMessages", fields: [senderId], references: [id], onDelete: Cascade)
+  lastMessageInChat Chat? @relation("LastMessage")
+
+  // same as: MessageSchema.index({chat: 1, createdAt: 1})
+  @@index([chatId, createdAt])
+}

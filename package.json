@@ -3,10 +3,31 @@
   "module": "index.ts",
   "type": "module",
   "private": true,
+  "scripts": {
+    "dev": "bun --watch index.ts",
+    "start": "bun index.ts",
+    "build": "bun install",
+    "db:migrate":"bunx prisma migrate dev --name init",
+    "db:generate": "bunx prisma generate",
+    "db:studio": "bunx prisma studio --config ./prisma.config.ts"
+  },
   "devDependencies": {
-    "@types/bun": "latest"
+    "@types/bun": "latest",
+    "@types/express": "^5.0.6",
+    "@types/node": "^25.0.9",
+    "prisma": "^7.2.0"
   },
   "peerDependencies": {
     "typescript": "^5"
+  },
+  "dependencies": {
+    "@clerk/express": "^1.7.62",
+    "@prisma/adapter-pg": "^7.2.0",
+    "@prisma/client": "^7.2.0",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^5.2.1",
+    "pg": "^8.17.1",
+    "socket.io": "^4.8.3"
   }
 }
